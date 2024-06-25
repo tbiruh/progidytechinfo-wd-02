@@ -1,0 +1,102 @@
+
+   
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Stopwatch</title>
+      <link rel="stylesheet" href="./wacth.css">
+    </head>
+    <body>
+      <div class="container">
+        <h1>Stopwatch</h1>
+        <div class="time-display">
+          <span id="minutes">00</span>:<span id="seconds">00</span>:<span id="milliseconds">000</span>
+        </div>
+        <div class="buttons">
+          <button id="start">Start</button>
+          <button id="pause">Pause</button>
+          <button id="reset">Reset</button>
+          <button id="lap">Lap</button>
+        </div>
+        <div class="lap-times">
+          <h2>Lap Times</h2>
+          <ul id="lap-list"></ul>
+        </div>
+      </div>
+      <script >const minutesDisplay = document.getElementById('minutes');
+        const secondsDisplay = document.getElementById('seconds');
+        const millisecondsDisplay = document.getElementById('milliseconds');
+        const startButton = document.getElementById('start');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const lapButton = document.getElementById('lap');
+        const lapList = document.getElementById('lap-list');
+        
+        let startTime, elapsedTime, interval, isRunning = false;
+        let lapTimes = [];
+        
+        function formatTime(time) {
+          const totalMilliseconds = time;
+          const milliseconds = totalMilliseconds % 1000;
+          const seconds = Math.floor(totalMilliseconds / 1000) % 60;
+          const minutes = Math.floor(totalMilliseconds / (1000 * 60));
+        
+          return `${pad(minutes, 2)}:${pad(seconds, 2)}:${pad(milliseconds, 3)}`;
+        }
+        
+        function pad(number, length) {
+          return number.toString().padStart(length, '0');
+        }
+        
+        function updateTimeDisplay() {
+          const currentTime = new Date().getTime() - startTime + elapsedTime;
+          minutesDisplay.textContent = formatTime(currentTime).split(':')[0];
+          secondsDisplay.textContent = formatTime(currentTime).split(':')[1];
+          millisecondsDisplay.textContent = formatTime(currentTime).split(':')[2];
+        }
+        
+        function startStopwatch() {
+          startTime = new Date().getTime();
+          interval = setInterval(updateTimeDisplay, 10);
+          isRunning = true;
+        }
+        
+        function pauseStopwatch() {
+          clearInterval(interval);
+          elapsedTime += new Date().getTime() - startTime;
+          isRunning = false;
+        }
+        
+        function resetStopwatch() {
+          clearInterval(interval);
+          startTime = 0;
+          elapsedTime = 0;
+          lapTimes = [];
+          updateTimeDisplay();
+          updateLapList();
+          isRunning = false;
+        }
+        
+        function recordLap() {
+          const currentTime = new Date().getTime() - startTime + elapsedTime;
+          lapTimes.push(currentTime);
+          updateLapList();
+        }
+        
+        function updateLapList() {
+          lapList.innerHTML = '';
+          for (let i = 0; i < lapTimes.length; i++) {
+            const lapItem = document.createElement('li');
+            lapItem.textContent = `Lap ${i + 1}: ${formatTime(lapTimes[i])}`;
+            lapList.appendChild(lapItem);
+          }
+        }
+        
+        startButton.addEventListener('click', startStopwatch);
+        pauseButton.addEventListener('click', pauseStopwatch);
+        resetButton.addEventListener('click', resetStopwatch);
+        lapButton.addEventListener('click', recordLap);</script>
+    </body>
+    </html>
